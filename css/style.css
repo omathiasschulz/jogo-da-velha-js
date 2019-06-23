@@ -1,0 +1,6 @@
+table {width:550px; height:350px; border:1px solid black}
+table tr { background-color:red; font:bold 46px Verdana; color:white}
+table tr td {text-align:center; width:33.33%}
+table tr td:hover {cursor:pointer}
+input[type=button] {width:150px; height:50px; font-size:20px; font-weight:bold; margin-bottom:20px}
+fieldset {font-size:20; font-weight:bold; border:2px solid blue; width: 300px; margin-bottom:25px}
