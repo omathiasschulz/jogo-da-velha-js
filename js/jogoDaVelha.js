@@ -1,119 +1,116 @@
-//DEIXA A DIV GAME ESCONDIDA
-window.onload =	function() { document.getElementById('game').style.visibility = 'hidden' };
-		
+
+var jogador1, jogador2, jogadorAtual, index = null
+var formas = ['X', 'O']
+var tabuleiro = new Array(9)
+
 function Jogador(nome, forma) {
-    this.nome = nome;
-    this.forma = forma;
+    this.nome = nome
+    this.forma = forma
 }
 
-var jogador1, jogador2;
-//Jogador da rodada
-var jogadorAtual;
-var formas = ['X', 'O'];
-var index = null;
-
-/*
-    0 1 2
-    3 4 5
-    6 7 8
-*/
-var tabuleiro = new Array(9);
-
-
-initGame = function() {
-    var nomeJogador1 = document.getElementById('jogador1').value;
-    var nomeJogador2 = document.getElementById('jogador2').value;
-    jogador1 = new Jogador(nomeJogador1, 0); //X
-    jogador2 = new Jogador(nomeJogador2, 1); //O
-
-    jogadorAtual = jogador1;
-    setLabelJogadorAtual();
-
-    //APOS DEFINIÇÃO DE JOGADORES, EXIBE A DIV E INICIA JOGO
-    document.getElementById('game').style.visibility = 'visible';
-    
+//ESCONDER A DIV GAME
+window.onload =	function() { 
+    document.getElementById('game').style.display = 'none'
 }
 
-/*Reinicia a partida*/
-reset = function() { window.location.reload(); }
+function iniciarJogo() {
+    var nomeJogador1 = document.getElementById('jogador1').value
+    var nomeJogador2 = document.getElementById('jogador2').value
 
-/*Seta o nome do jogador da rodada na página HTML*/
-setLabelJogadorAtual = function() {
-    document.getElementById('jogadorAtual').innerHTML = 'Jogador atual:  ' + jogadorAtual.nome;
+    // SETA OS NOMES COMO PADRÃO CASO NÃO SEJA DIGITADO NENHUM NOME
+    if (nomeJogador1 == '')
+        nomeJogador1 = 'Jogador 01'
+    if (nomeJogador2 == '')
+        nomeJogador2 = 'Jogador 02'
+
+    jogador1 = new Jogador(nomeJogador1, 0) //Jogador X
+    jogador2 = new Jogador(nomeJogador2, 1) //Jogador O
+
+    jogadorAtual = jogador1
+    setLabelJogadorAtual()
+
+    // MOSTRAR A DIV GAME E ESCONDER A DIV JOGADORES
+    document.getElementById('game').style.display = 'block'
+    document.getElementById('jogadores').style.display = 'none'
 }
 
-/*Verifica se o tabuleiro está completamente preenchido, se estiver, significa que ninguém venceu a rodada*/
-tabuleiroIsFilled = function() {
-    var preenchidos = 0;
+// PREENCHE A CÉLULA E VERIFICA O JOGADOR ATUAL
+setValorCelula = function(celula, posicao) { 
+    if(tabuleiro[posicao] == undefined) {
+        celula.innerHTML = formas[jogadorAtual.forma]
+        tabuleiro[posicao] = formas[jogadorAtual.forma]
+
+        // JOGADOR ATUAL
+        if (jogadorAtual.forma == 0)
+            jogadorAtual = jogador2
+        else
+            jogadorAtual = jogador1
+        setLabelJogadorAtual()
+    }
+
+    verificaLinhas()
+    verificaColunas()
+    verificaDiagonais()
+
+    if (fimDeJogo() ) {
+        alert ('Jogo empatou')
+        reset()
+    }
+}
+
+function fimDeJogo() {
+    var qtdCelulas = 0
         for(var i = 0; i < tabuleiro.length; i++)
             if(tabuleiro[i]	!= undefined) 
-                preenchidos++;
-        return preenchidos == tabuleiro.length;
+                qtdCelulas++
+        return qtdCelulas == tabuleiro.length
 }
 
-/*Verifica a existência de ocorrências de um mesmo elemento(X ou O) nas linhas do tabuleiro, procurando um vencedor*/
-allElementsInSomeLine = function() {
+function verificaLinhas() {
     for( var i = 0; i < 7; i += 3) {
         if ( tabuleiro[i] == 'X' && tabuleiro[i + 1] == 'X' && tabuleiro[i + 2] == 'X' ) { 
-            alert (jogador1.nome + ' wins!!!');
-            reset();
+            alert (jogador1.nome + ' ganhou!')
+            reset()
         }
         if ( tabuleiro[i] == 'O' && tabuleiro[i + 1] == 'O' && tabuleiro[i + 2] == 'O' ) {
-            alert (jogador2.nome + ' wins!!!');
-            reset();
+            alert (jogador2.nome + ' ganhou!')
+            reset()
         }
     }
 }
 
-/*Verifica a existência de ocorrências de um mesmo elemento(X ou O) nas colunas do tabuleiro, procurando um vencedor*/
-allElementsInSomeColumn = function() {
+function verificaColunas() {
     for( var i = 0; i < 3; i++) {
         if ( tabuleiro[i] == 'X' && tabuleiro[i + 3] == 'X' && tabuleiro[i + 6] == 'X' ) { 
-            alert (jogador1.nome + ' wins!!!');
-            reset();
+            alert (jogador1.nome + ' ganhou!')
+            reset()
         }
         if ( tabuleiro[i] == 'O' && tabuleiro[i + 3] == 'O' && tabuleiro[i + 6] == 'O' ) {
-            alert (jogador2.nome + ' wins!!!');
-            reset();
+            alert (jogador2.nome + ' ganhou!')
+            reset()
         }
     }
 
 }
 
-/*Verifica a existência de ocorrências de um mesmo elemento(X ou O) nas diagonais do tabuleiro, procurando um vencedor*/
-allElementsInSomeDiagonal = function() {
+function verificaDiagonais() {
     if ( (tabuleiro[0] == 'X' && tabuleiro[4] == 'X' && tabuleiro[8] == 'X') ||
             (tabuleiro[2] == 'X' && tabuleiro[4] == 'X' && tabuleiro[6] == 'X')) {
-            alert (jogador1.nome + ' wins!!!');
-        reset();
+        alert (jogador1.nome + ' ganhou!')
+        reset()
     } else if ( (tabuleiro[0] == 'O' && tabuleiro[4] == 'O' && tabuleiro[8] == 'O') ||
                 (tabuleiro[2] == 'O' && tabuleiro[4] == 'O' && tabuleiro[6] == 'O') ) {
-            alert (jogador2.nome + ' wins!!!');
-        reset();
+        alert (jogador2.nome + ' ganhou!')
+        reset()
     } 
 }
 
-/*Preenche a célula da tabela HTML escolhida pelo usuário ao clicar, além de cuidar do jogador atual da rodada e chamar as funções
-    de verificação de algum ganhador */
-setOnCeil = function(cel, pos) { 
-        if(tabuleiro[pos] == undefined) {
-            cel.innerHTML = formas[jogadorAtual.forma];
-            tabuleiro[pos] = formas[jogadorAtual.forma];
+// REINICIAR O JOGO
+function reset() { 
+    window.location.reload()
+}
 
-            //define o jogador da rodada
-            (jogadorAtual.forma == 0) ? jogadorAtual = jogador2 : jogadorAtual = jogador1;
-            setLabelJogadorAtual();
-
-        } else alert('Ops. Already marked value for this =/');
-
-        allElementsInSomeLine();
-        allElementsInSomeColumn();
-        allElementsInSomeDiagonal();
-
-        if ( tabuleiroIsFilled() ) {
-            alert ('Nobody wins! :(. Try Again');
-            reset();
-        }
-        
-    
+// SETA O JOGADOR ATUAL NA LABEL JOGADORATUAL
+function setLabelJogadorAtual() {
+    document.getElementById('jogadorAtual').innerHTML = 'Jogador atual:  ' + jogadorAtual.nome
 }
